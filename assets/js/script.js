@@ -62,6 +62,7 @@ var createTaskEl = function(taskDataObj) {
     taskDataObj.id=taskIdCounter;
     tasks.push(taskDataObj);
     saveTasks();
+    
     //increase task counter for next unique id
     taskIdCounter++;
     
@@ -145,6 +146,7 @@ var completeEditTask = function(taskName, taskType, taskId) {
   var deleteTask = function(taskId) {
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
     taskSelected.remove();
+    // localStorage.removeItem('');
     var updatedTaskArr = [];
 
     for(var i= 0; i < tasks.length; i++) {
@@ -154,6 +156,8 @@ var completeEditTask = function(taskName, taskType, taskId) {
     }
     tasks = updatedTaskArr;
     saveTasks();
+    alert("Task Deleted")
+    
   }
 
   // button handler function
@@ -202,7 +206,7 @@ var completeEditTask = function(taskName, taskType, taskId) {
   var dragTaskHandler = function(event) {
     var taskId =  event.target.getAttribute("data-task-id");
     event.dataTransfer.setData("text/plain", taskId);
-    var getId = event.dataTransfer.getData("text/plain");
+    event.dataTransfer.getData("text/plain");
   };
 
   // create drop zone
@@ -258,46 +262,18 @@ var completeEditTask = function(taskName, taskType, taskId) {
 
   //load tasks
   var loadTasks = function() {
-    var tasks = localStorage.getItem("tasks");
-    console.log(tasks);
-    if (tasks === null) {
-      var tasks = [];
+    var savedTasks = localStorage.getItem("tasks");
+    if (!savedTasks) {
       return false;
     }
-    tasks = JSON.parse(tasks);
-    console.log(tasks);
-    for(var i =0; i <tasks.length; i++) {
-      console.log(tasks[i]);
-      tasks[i].id = taskIdCounter++;
-      console.log(tasks[i].id);
-      var listItemEl=document.createElement("li");
-      listItemEl.className="task-item";
-      listItemEl.setAttribute("data-task-id", tasks[i].id);
-      listItemEl.setAttribute("draggable", "true");
-      
-      var taskInfoEl = document.createElement("div");
-      taskInfoEl.className="task-info";
-      taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>";
-      var taskActionsEl = createTaskActions(tasks[i].id);
-      listItemEl.appendChild(taskActionsEl);
-      if(tasks[i].status === 'to-do') {
-        listItemEl.querySelector("select[name='status-change']").selectedIndex = 0
-        listItemEl.appendChild(tasksToDoEl);
-      } 
-      else if (tasks[i].status === 'in-progress') {
-        listItemEl.querySelector("select[name='status-change']").selectedIndex = 1
-        listItemEl.appendChild(tasksInProgressEl);
-      }   
-      else if (tasks[i].status === 'complete') {
-      listItemEl.querySelector("select[name='status-change']").selectedIndex = 2
-      listItemEl.appendChild(tasksCompleteEl);
-      }
-    taskIdCounter+1
   
-    
-  }
-  
+    savedTasks = JSON.parse(savedTasks);
+    for (var i = 0; i < savedTasks.length; i++) {
+      createTaskEl(savedTasks[i]);
+    }
 };
+
+
   // event listeners
   formEl.addEventListener("submit", taskFormHandler);
 
